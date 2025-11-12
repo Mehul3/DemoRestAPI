@@ -15,8 +15,20 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public User register(User user) {
+    public User registerUser(User user) {
+        // Check if username already exists
+        if (userRepository.existsByUsername(user.getUsername())) {
+            throw new RuntimeException("Username already exists! Please use a different username.");
+        }
+
+        // Encode password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+
+        // Default role if not provided
+        if (user.getRole() == null || user.getRole().isEmpty()) {
+            user.setRole("USER");
+        }
+
         return userRepository.save(user);
     }
 
